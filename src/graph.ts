@@ -6,8 +6,7 @@
  * Input:  JournalEnricherInput  (rawContent, entryDate, existingThemes[])
  * Output: JournalEnricherOutput (dominantThemes, moodScore, energyLevel, coreQuestions[], insightSummary, publicRewrite, title, vectorId)
  *
- * TODO: implement nodes under src/nodes/ per PRD.md
- * TODO: implement src/seed.ts batch script for existing vault entries
+ * Implementation tracked in GitHub issues — see repo Issues tab.
  */
 
 import { StateGraph, START, END, MemorySaver, StateSchema, UntrackedValue } from '@langchain/langgraph';
@@ -48,13 +47,12 @@ const JournalState = new StateSchema({
 
 const standardRetry = { maxAttempts: 3, initialInterval: 1000, backoffFactor: 2 };
 
-// TODO: replace stubs with real node implementations
-const parseMarkdownNode         = async (s: any) => ({ phase: 'parse-markdown', bodyText: s.rawContent, wordCount: 0, structuralSignals: {}, season: '' });
-const extractThemesNode         = async (s: any) => ({ phase: 'extract-themes', dominantThemes: [], keywords: [], recurringThemes: [] });
-const scoreMoodNode             = async (s: any) => ({ phase: 'score-mood', moodScore: 0, energyLevel: 'medium' as const, emotionalArc: 'flat' as const, tension: [] });
-const surfaceInsightsNode       = async (s: any) => ({ phase: 'surface-insights', coreQuestions: [], realization: '', openLoops: [] });
-const generatePublicRewriteNode = async (s: any) => ({ phase: 'generate-rewrite', insightSummary: '', publicRewrite: '', title: '' });
-const embedAndStoreNode         = async (s: any) => ({ phase: 'embed-store', vectorId: '', storedAt: new Date().toISOString() });
+import { parseMarkdownNode }         from './nodes/parseMarkdown.js';
+import { extractThemesNode }         from './nodes/extractThemes.js';
+import { scoreMoodNode }             from './nodes/scoreMood.js';
+import { surfaceInsightsNode }       from './nodes/surfaceInsights.js';
+import { generatePublicRewriteNode } from './nodes/generatePublicRewrite.js';
+import { embedAndStoreNode }         from './nodes/embedAndStore.js';
 
 function assembleGraph(checkpointer?: MemorySaver) {
   const builder = new StateGraph(JournalState)
